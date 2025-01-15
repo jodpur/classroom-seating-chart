@@ -1,0 +1,22 @@
+# Exclude OS-generated files
+.DS_Store
+
+# Ignore sensitive data and backups
+*.csv
+/data.json
+/backups/
+student_inputs/
+
+# Ignore Python cache and virtual environment files
+__pycache__/
+*.pyc
+*.pyo
+*.env
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore other unwanted files
+*.log
+*.bak

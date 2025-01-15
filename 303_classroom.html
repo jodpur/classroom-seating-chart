@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classroom Seating Chart</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            outline: 2px solid red;
+            position: relative;
+            max-width: 1200px;
+            margin: 20px auto;
+            text-align: center;
+        }
+
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 1000;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .popup textarea {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        button {
+            padding: 5px 10px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+        
+.classroom-image {
+    width: 100%; /* Make the image span the full width of the browser */
+    height: auto; /* Maintain aspect ratio */
+    display: block; /* Remove unwanted spacing below the image */
+}
+
+    .seat-label {
+	    outline: 1px dashed blue;
+        position: absolute;
+        border: 2px solid yellow; /* Bright yellow border for visibility */
+        background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent background */
+        color: black; /* Text color */
+        padding: 5px; /* Space around text */
+        font-size: 12px; /* Adjust font size */
+        text-align: center;
+        pointer-events: none; /* Prevent interference with clicks */
+        transform: translate(-50%, -50%); /* Center text within rectangle */
+    }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Classroom Image -->
+        <img src="classroom_images/RM303_Image_of_whole_classroom.png" usemap="#image-map" alt="Classroom Seating Chart">
+
+		<!-- Seat ID Labels -->
+>		<div class="seat-label" style="left: 25px; top: 262.5px;">1A1</div>
+>		<div class="seat-label" style="left: 152.5px; top: 260px;">1A2</div>
+>		<div class="seat-label" style="left: 298px; top: 254px;">1A3</div>
+>		<div class="seat-label" style="left: 693px; top: 240.5px;">1B1</div>
+>		<div class="seat-label" style="left: 853px; top: 234.5px;">1B2</div>
+>		<div class="seat-label" style="left: 977.5px; top: 226px;">1B3</div>
+>		<div class="seat-label" style="left: 121.5px; top: 173.5px;">2A1</div>
+>		<div class="seat-label" style="left: 221.5px; top: 172px;">2A2</div>
+>		<div class="seat-label" style="left: 318px; top: 166.5px;">2A3</div>
+>		<div class="seat-label" style="left: 410.5px; top: 166.5px;">2A4</div>
+>		<div class="seat-label" style="left: 638px; top: 151px;">2B1</div>
+>		<div class="seat-label" style="left: 719.5px; top: 147px;">2B2</div>
+>		<div class="seat-label" style="left: 802.5px; top: 144px;">2B3</div>
+>		<div class="seat-label" style="left: 900.5px; top: 140.5px;">2B4</div>
+		<div class="seat-label" style="left: 192.5px; top: 123px;">3A1</div>
+		<div class="seat-label" style="left: 267.5px; top: 124.5px;">3A2</div>
+		<div class="seat-label" style="left: 347px; top: 118.5px;">3A3</div>
+		<div class="seat-label" style="left: 426.5px; top: 116.5px;">3A4</div>
+		<div class="seat-label" style="left: 606px; top: 106.5px;">3B1</div>
+		<div class="seat-label" style="left: 672.5px; top: 102.5px;">3B2</div>
+		<div class="seat-label" style="left: 744.5px; top: 101px;">3B3</div>
+		<div class="seat-label" style="left: 837px; top: 95px;">3B4</div>
+		<div class="seat-label" style="left: 239.5px; top: 87.5px;">4A1</div>
+		<div class="seat-label" style="left: 313px; top: 86px;">4A2</div>
+		<div class="seat-label" style="left: 376.5px; top: 85.5px;">4A3</div>
+		<div class="seat-label" style="left: 437px; top: 81.5px;">4A4</div>
+		<div class="seat-label" style="left: 600.5px; top: 76px;">4B1</div>
+		<div class="seat-label" style="left: 662px; top: 73.5px;">4B2</div>
+		<div class="seat-label" style="left: 724px; top: 72.5px;">4B3</div>
+		<div class="seat-label" style="left: 792.5px; top: 69.5px;">4B4</div>
+		<div class="seat-label" style="left: 272.5px; top: 66px;">5A1</div>
+		<div class="seat-label" style="left: 331.5px; top: 62.5px;">5A2</div>
+		<div class="seat-label" style="left: 391px; top: 58.5px;">5A3</div>
+		<div class="seat-label" style="left: 446px; top: 58.5px;">5A4</div>
+		<div class="seat-label" style="left: 587.5px; top: 54px;">5B1</div>
+		<div class="seat-label" style="left: 644px; top: 51px;">5B2</div>
+		<div class="seat-label" style="left: 697px; top: 46px;">5B3</div>
+		<div class="seat-label" style="left: 765px; top: 45.5px;">5B4</div>
+		<div class="seat-label" style="left: 289px; top: 40px;">6A1</div>
+		<div class="seat-label" style="left: 343.5px; top: 36.5px;">6A2</div>
+		<div class="seat-label" style="left: 399.5px; top: 33.5px;">6A3</div>
+		<div class="seat-label" style="left: 451.5px; top: 32px;">6A4</div>
+		<div class="seat-label" style="left: 574px; top: 24.5px;">6B1</div>
+		<div class="seat-label" style="left: 624px; top: 22px;">6B2</div>
+		<div class="seat-label" style="left: 675px; top: 20.5px;">6B3</div>
+		<div class="seat-label" style="left: 746.5px; top: 19px;">6B4</div>
+ 
+        <!-- Image Map with Seat IDs -->
+		<map name="image-map">
+			<area target="_self" alt="1A1" title="1A1" href="#" coords="8,249,42,276" shape="rect" onclick="openPopup(event, '1A1')">
+			<area target="_self" alt="1A2" title="1A2" href="#" coords="133,245,172,275" shape="rect" onclick="openPopup(event, '1A2')">
+			<area target="_self" alt="1A3" title="1A3" href="#" coords="280,239,316,269" shape="rect" onclick="openPopup(event, '1A3')">
+			<area target="_self" alt="1B1" title="1B1" href="#" coords="672,225,714,256" shape="rect" onclick="openPopup(event, '1B1')">
+			<area target="_self" alt="1B2" title="1B2" href="#" coords="833,220,873,249" shape="rect" onclick="openPopup(event, '1B2')">
+			<area target="_self" alt="1B3" title="1B3" href="#" coords="960,212,995,240" shape="rect" onclick="openPopup(event, '1B3')">
+			<area target="_self" alt="2A1" title="2A1" href="#" coords="108,161,135,186" shape="rect" onclick="openPopup(event, '2A1')">
+			<area target="_self" alt="2A2" title="2A2" href="#" coords="208,159,235,185" shape="rect" onclick="openPopup(event, '2A2')">
+			<area target="_self" alt="2A3" title="2A3" href="#" coords="305,155,331,178" shape="rect" onclick="openPopup(event, '2A3')">
+			<area target="_self" alt="2A4" title="2A4" href="#" coords="398,155,423,178" shape="rect" onclick="openPopup(event, '2A4')">
+			<area target="_self" alt="2B1" title="2B1" href="#" coords="625,140,651,162" shape="rect" onclick="openPopup(event, '2B1')">
+			<area target="_self" alt="2B2" title="2B2" href="#" coords="707,136,732,158" shape="rect" onclick="openPopup(event, '2B2')">
+			<area target="_self" alt="2B3" title="2B3" href="#" coords="790,133,815,155" shape="rect" onclick="openPopup(event, '2B3')">
+			<area target="_self" alt="2B4" title="2B4" href="#" coords="888,129,913,152" shape="rect" onclick="openPopup(event, '2B4')">
+			<area target="_self" alt="3A1" title="3A1" href="#" coords="180,112,205,134" shape="rect" onclick="openPopup(event, '3A1')">
+			<area target="_self" alt="3A2" title="3A2" href="#" coords="256,112,279,137" shape="rect" onclick="openPopup(event, '3A2')">
+			<area target="_self" alt="3A3" title="3A3" href="#" coords="335,107,359,130" shape="rect" onclick="openPopup(event, '3A3')">
+			<area target="_self" alt="3A4" title="3A4" href="#" coords="415,104,438,129" shape="rect" onclick="openPopup(event, '3A4')">
+			<area target="_self" alt="3B1" title="3B1" href="#" coords="595,96,617,117" shape="rect" onclick="openPopup(event, '3B1')">
+			<area target="_self" alt="3B2" title="3B2" href="#" coords="661,92,684,113" shape="rect" onclick="openPopup(event, '3B2')">
+			<area target="_self" alt="3B3" title="3B3" href="#" coords="734,91,755,111" shape="rect" onclick="openPopup(event, '3B3')">
+			<area target="_self" alt="3B4" title="3B4" href="#" coords="826,85,848,105" shape="rect" onclick="openPopup(event, '3B4')">
+			<area target="_self" alt="4A1" title="4A1" href="#" coords="229,78,250,97" shape="rect" onclick="openPopup(event, '4A1')">
+			<area target="_self" alt="4A2" title="4A2" href="#" coords="303,76,323,96" shape="rect" onclick="openPopup(event, '4A2')">
+			<area target="_self" alt="4A3" title="4A3" href="#" coords="366,75,387,96" shape="rect" onclick="openPopup(event, '4A3')">
+			<area target="_self" alt="4A4" title="4A4" href="#" coords="427,72,447,91" shape="rect" onclick="openPopup(event, '4A4')">
+			<area target="_self" alt="4B1" title="4B1" href="#" coords="590,65,611,87" shape="rect" onclick="openPopup(event, '4B1')">
+			<area target="_self" alt="4B2" title="4B2" href="#" coords="652,64,672,83" shape="rect" onclick="openPopup(event, '4B2')">
+			<area target="_self" alt="4B3" title="4B3" href="#" coords="714,63,734,82" shape="rect" onclick="openPopup(event, '4B3')">
+			<area target="_self" alt="4B4" title="4B4" href="#" coords="782,60,803,79" shape="rect" onclick="openPopup(event, '4B4')">
+			<area target="_self" alt="5A1" title="5A1" href="#" coords="263,56,282,76" shape="rect" onclick="openPopup(event, '5A1')">
+			<area target="_self" alt="5A2" title="5A2" href="#" coords="323,53,340,72" shape="rect" onclick="openPopup(event, '5A2')">
+			<area target="_self" alt="5A3" title="5A3" href="#" coords="382,49,400,68" shape="rect" onclick="openPopup(event, '5A3')">
+			<area target="_self" alt="5A4" title="5A4" href="#" coords="437,50,455,67" shape="rect" onclick="openPopup(event, '5A4')">
+			<area target="_self" alt="5B1" title="5B1" href="#" coords="578,44,597,64" shape="rect" onclick="openPopup(event, '5B1')">
+			<area target="_self" alt="5B2" title="5B2" href="#" coords="634,42,654,60" shape="rect" onclick="openPopup(event, '5B2')">
+			<area target="_self" alt="5B3" title="5B3" href="#" coords="687,38,707,54" shape="rect" onclick="openPopup(event, '5B3')">
+			<area target="_self" alt="5B4" title="5B4" href="#" coords="756,36,774,55" shape="rect" onclick="openPopup(event, '5B4')">
+			<area target="_self" alt="6A1" title="6A1" href="#" coords="279,30,299,50" shape="rect" onclick="openPopup(event, '6A1')">
+			<area target="_self" alt="6A2" title="6A2" href="#" coords="335,28,352,45" shape="rect" onclick="openPopup(event, '6A2')">
+			<area target="_self" alt="6A3" title="6A3" href="#" coords="390,26,409,41" shape="rect" onclick="openPopup(event, '6A3')">
+			<area target="_self" alt="6A4" title="6A4" href="#" coords="443,24,460,40" shape="rect" onclick="openPopup(event, '6A4')">
+			<area target="_self" alt="6B1" title="6B1" href="#" coords="565,17,583,32" shape="rect" onclick="openPopup(event, '6B1')">
+			<area target="_self" alt="6B2" title="6B2" href="#" coords="615,13,633,31" shape="rect" onclick="openPopup(event, '6B2')">
+			<area target="_self" alt="6B3" title="6B3" href="#" coords="666,10,684,31" shape="rect" onclick="openPopup(event, '6B3')">
+			<area target="_self" alt="6B4" title="6B4" href="#" coords="737,10,756,28" shape="rect" onclick="openPopup(event, '6B4')">
+		</map>
+    </div>
+    
+    <!-- Popup for Inputs -->
+    <div class="overlay" id="overlay" onclick="closePopup()"></div>
+    <div class="popup" id="popup">
+        <h3 id="seat-title">Seat: </h3>
+        <textarea id="name-id" placeholder="Name; ID"></textarea>
+        <textarea id="qa" placeholder="Q&A"></textarea>
+        <button onclick="saveData()">Save</button>
+    </div>
+
+    <script>
+        const seatData = {};
+        const popup = document.getElementById('popup');
+        const overlay = document.getElementById('overlay');
+        const seatTitle = document.getElementById('seat-title');
+        const nameIdInput = document.getElementById('name-id');
+        const qaInput = document.getElementById('qa');
+        let currentSeat = null;
+
+        function openPopup(event, seatId) {
+            event.preventDefault();
+            currentSeat = seatId;
+            seatTitle.textContent = `Seat: ${seatId}`;
+            nameIdInput.value = seatData[seatId]?.nameId || '';
+            qaInput.value = seatData[seatId]?.qa || '';
+            popup.style.display = 'block';
+            overlay.style.display = 'block';
+        }
+
+        function closePopup() {
+            popup.style.display = 'none';
+            overlay.style.display = 'none';
+        }
+
+        function saveData() {
+            if (currentSeat) {
+                seatData[currentSeat] = {
+                    nameId: nameIdInput.value,
+                    qa: qaInput.value
+                };
+            }
+            closePopup();
+        }
+    </script>
+</body>
+</html>
