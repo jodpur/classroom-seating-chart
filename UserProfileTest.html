@@ -1,209 +1,317 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Profile Upload</title>
-  <style>
-    .button {
-      background-color: #ffffff;
-      border: none;
-      color: white;
-      padding: 16px 32px;
-      text-align: center;
-      text-decoration: none;
-      display: inline-block;
-      font-size: 16px;
-      margin: 4px 2px;
-      transition-duration: 0.4s;
-      cursor: pointer;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classroom Seating Chart</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
 
-    .button5 {
-      background-color: white;
-      color: black;
-      border: 2px solid #555555;
-      border-radius: 5px;
-    }
+        .container {
+            outline: 2px solid red;
+            position: relative;
+            max-width: 1200px;
+            margin: 20px auto;
+            text-align: center;
+        }
 
-    .button5:hover {
-      background-color: #555555;
-      color: white;
-    }
+        .seat-label {
+            outline: 1px dashed blue;
+            position: absolute;
+            border: 2px solid yellow; /* Bright yellow border for visibility */
+            background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent background */
+            color: black; /* Text color */
+            padding: 5px; /* Adjusted padding */
+            font-size: 14px; /* Adjusted font size */
+            text-align: center;
+            transform: translate(-50%, -50%); /* Center text within rectangle */
+            width: calc(60px * 1.2); /* Increase width by 20% */
+            height: calc(30px * 1.2); /* Increase height by 20% */
+        }
 
-    #popup {
-      display: none;
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background-color: white;
-      padding: 15px;
-      border: 1px solid #ccc;
-      border-radius: 25px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-      z-index: 1000;
-    }
+        .name-input {
+            width: calc(100% - 10px); /* Full width minus padding */
+            margin-top: 25px; /* Increased space between seat ID and Name input */
+        }
 
-    #preview-container {
-      width: 200px;
-      height: 200px;
-      border: 2px solid #110101;
-      border-radius: 10px;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      overflow: hidden;
-    }
+        .name-display {
+            width: calc(100% - 10px);
+            background-color: rgba(255, 255, 255, 0.8);
+            border: 1px solid #ccc;
+            padding: 5px;
+            text-overflow: ellipsis; /* Cut off long names with ellipsis */
+            overflow: hidden; /* Hide overflow text */
+            white-space: nowrap; /* Prevent wrapping */
+        }
 
-    #preview {
-      width: 100%;
-      height: 100%;
-      object-fit: cover; 
-    }
+        .overlay {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+        }
 
-    .remove-image {
-      position: absolute;
-      top: 5px;
-      right: 5px;
-      font-size: 20px;
-      color: red;
-      cursor: pointer;
-    }
+        #popup {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 15px;
+            border-radius: 25px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        }
 
-    .overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.5);
-      z-index: 999;
-    }
-  </style>
-</head>
-<body>
+        #preview-container {
+            width: 200px;
+            height: 200px;
+            border: 2px solid #ccc;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
 
-<button onclick="openPopup()">Upload Profile</button>
+        #preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; 
+        }
 
-<div id="popup">
-    <h2 style="font-family: Arial; font-size: 20px; color: rgb(32, 32, 32); text-align: center;">Upload Profile</h2>
-    <input type="file" id="imageUpload" accept="image/*">
-    <div id="preview-container">
-        <img id="preview" alt="">
-        <span id="removeButton" class="remove-image" onclick="removeImage()">x</span>
-    </div>
-    <div id="additionalInfo">
-        <label for="name">Name:</label><br>
-        <input type="text" id="name" maxlength="20" name="name"><br><br>
-        <label for="bio">Questions and Answers:</label><br>
-        <textarea style="resize:none" id="bio" name="bio" rows="4" cols="50"></textarea><br><br>
-        <button class="button button5" onclick="saveChanges()" style="display:block; margin:auto;">Save</button>
-    </div>
-</div>
-
-<div class="overlay" id="overlay"></div>
-
-<script>
-const popup = document.getElementById('popup');
-const overlay = document.getElementById('overlay');
-const imageUpload = document.getElementById('imageUpload');
-const preview = document.getElementById('preview');
-const nameInput = document.getElementById('name');
-const bioInput = document.getElementById('bio');
-const removeButton = document.getElementById('removeButton');
-
-const defaultImageSrc = "data:image/jpeg;base64,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...";
-
-function openPopup() {
-    popup.style.display = 'block';
-    overlay.style.display = 'block';
-
-    if (localStorage.getItem('profilePicture')) {
-        preview.src = localStorage.getItem('profilePicture');
-        removeButton.style.display = 'block';
-    } else {
-        resetPreview();
-    }
-
-    const savedName = localStorage.getItem('profileName');
-    const savedBio = localStorage.getItem('profileBio');
-    
-    if (savedName) {
-        nameInput.value = savedName;
-    }
-    
-    if (savedBio) {
-        bioInput.value = savedBio;
-    }
-}
-
-function saveChanges() {
-    if (preview.src && preview.src !== defaultImageSrc) {
-        localStorage.setItem('profilePicture', preview.src);
-    } else {
-        localStorage.removeItem('profilePicture'); // Ensure removal from storage if default
-    }
-    
-    localStorage.setItem('profileName', nameInput.value);
-    localStorage.setItem('profileBio', bioInput.value);
-
-    popup.style.display = 'none';
-    overlay.style.display = 'none';
-}
-
-imageUpload.addEventListener('change', function(event) {
-    const file = event.target.files[0];
-
-    if (file) {
-        if (file.size > 3 * 1024 * 1024) { 
-            alert("File size exceeds 3MB.");
-            imageUpload.value = "";
-            return;
+        .remove-image {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            font-size: 20px;
+            color: red;
+            cursor: pointer; 
         }
         
-        const reader = new FileReader();
+        .button {
+          background-color: #ffffff;
+          border: none;
+          color: white;
+          padding: 16px 32px;
+          text-align: center;
+          text-decoration: none;
+          display: inline-block;
+          font-size: 16px;
+          margin-top :10px; 
+          transition-duration :0.4s; 
+          cursor :pointer; 
+        }
         
-        reader.onload = function(e) {
-            const img = new Image();
-            img.onload = function() {
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-
-                canvas.width = 500; // Resize as needed
-                canvas.height = 500;
-
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-                preview.src = canvas.toDataURL('image/jpeg');
-                removeButton.style.display = 'block';
-            };
-            img.src = e.target.result; // Load image
-        };
+        .button5 {
+          background-color :white; 
+          color :black; 
+          border :2px solid #555555; 
+          border-radius :5px; 
+        }
         
-        reader.readAsDataURL(file);
-    }
-});
+        .button5:hover {
+          background-color :#555555; 
+          color :white; 
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Classroom Image -->
+        <img src="classroom_images/RM303_Image_of_whole_classroom.png" usemap="#image-map" alt="Classroom Seating Chart">
+        <!-- Dynamic Seat Labels -->
+        <div id="seats"></div>
 
-function removeImage() {
-    resetPreview();
-}
+    </div>
 
-function resetPreview() {
-    imageUpload.value = '';
-    preview.src = defaultImageSrc; // Reset to default image
-    removeButton.style.display = 'none';
-    
-    localStorage.removeItem('profilePicture'); // Clear from local storage
-}
+    <!-- Popup for Profile Upload -->
+    <div class="overlay" id="overlay" onclick="closePopup()"></div>
+    <div id="popup">
+        <h2 id="seat-title" style="font-family:Ariel;font-size :20px;color :rgb(32,32,32);text-align:center;"></h2>
+        
+        <input type="file" id="imageUpload" accept="image/*">
+        
+        <div id="preview-container">
+           <img id="preview" alt="" class="default">
+           <span id="removeButton" class="remove-image" onclick="removeImage()">x</span>
+       </div>
+       
+       <div id="additionalInfo">
+           <label for="name">Name:</label><br>
+           <input type="text" id="name" maxlength="20" name="name"><br><br>
+           
+           <label for="bio">Questions and Answers:</label><br>
+           <textarea style="resize:none" id="bio" name="bio" rows="4" cols="50"></textarea><br><br>
+           
+           <button class="button button5" onclick="saveChanges()" style="display:block;margin:auto;">Save</button>
+       </div>
+   </div>
 
-// Optional - Close popup when clicking outside
-overlay.addEventListener('click', function() {
-   popup.style.display = 'none';
-   overlay.style.display = 'none';
-});
-</script>
+   <script>
+       const popup = document.getElementById('popup');
+       const overlay = document.getElementById('overlay');
+       const imageUpload = document.getElementById('imageUpload');
+       const preview = document.getElementById('preview');
+       const nameInput = document.getElementById('name');
+       const bioInput = document.getElementById('bio');
+       const removeButton = document.getElementById('removeButton');
+       const seatTitle = document.getElementById('seat-title');
 
+       let currentSeat = null;
+
+       // Define seat positions and IDs
+       const seats = [
+         { id:'1A1', left:'145px', top:'250px' },
+         { id:'1A2', left:'260px', top:'250px' },
+         { id:'1A3', left:'385px', top:'250px' },
+         { id:'1B1', left:'805px', top:'240.5px' },
+         { id:'1B2', left:'960px', top:'234.5px' },
+         { id:'1B3', left:'1077.5px', top:'226px' },
+         { id:'2B1', left:'748px', top:'149px'},
+         { id:'2B2', left:'849.5px', top:'145px'},
+         { id:'2B3', left:'955.5px', top:'140px'},
+         { id:'2B4', left:'1060.5px', top:'135.5px'},
+         { id:'2A1', left:'180.5px', top:'165px'},
+         { id:'2A2', left:'290.5px', top:'160.5px'},
+         { id:'2A3', left:'400px', top:'160.5px'},
+         { id:'2A4', left:'500.5px', top:'160.5px'}
+       ];
+
+       // Add more seats later...
+
+       // Function to create seat labels dynamically
+       function createSeatLabels() {
+           const seatsContainer = document.getElementById('seats');
+           
+           seats.forEach(seat => {
+               const seatLabel = document.createElement('div');
+               seatLabel.className = 'seat-label';
+               seatLabel.style.left = seat.left;
+               seatLabel.style.top = seat.top;
+
+               // Display the seat ID
+               seatLabel.textContent = seat.id;
+
+               // Create a container for displaying the custom name
+               const nameDisplayContainer = document.createElement('div');
+               nameDisplayContainer.className = 'name-display';
+               nameDisplayContainer.id = `name-display-${seat.id}`;
+               nameDisplayContainer.textContent = "Name"; 
+               nameDisplayContainer.style.fontFamily = "Verdana, sans-serif";
+               nameDisplayContainer.style.fontSize = "12";
+               nameDisplayContainer.style.fontWeight = "normal";
+               nameDisplayContainer.style.color = "Black";
+               nameDisplayContainer.style.opacity = "0.7";
+               
+               seatLabel.appendChild(nameDisplayContainer);
+               
+               seatLabel.onclick = (event) => openPopup(seat.id);
+
+               seatsContainer.appendChild(seatLabel);
+           });
+       }
+
+       function openPopup(seatId) {
+           currentSeat = seatId;
+
+           // Set the title to the selected seat ID
+           seatTitle.textContent = `Seat ID: ${seatId}`;
+           seatTitle.style.fontFamily = "Arial";
+           seatTitle.style.fontSize = "20px";
+           seatTitle.style.fontWeight = "bold";
+
+
+           popup.style.display = 'block';
+           overlay.style.display = 'block';
+
+
+           preview.src = ""; // Reset preview
+           removeButton.style.display = 'none';
+           nameInput.value = ''; 
+           bioInput.value = ''; 
+
+           loadSavedData();
+       }
+
+       function loadSavedData() {
+           const savedData = JSON.parse(localStorage.getItem(currentSeat)) || {};
+           preview.src = savedData.profilePicture || "";
+           nameInput.value = savedData.name || ""; 
+           bioInput.value = savedData.bio || ""; 
+
+           if (savedData.profilePicture) {
+               removeButton.style.display = 'block'; // Show remove button if there's a picture
+           } else {
+               removeButton.style.display = 'none'; // Hide remove button if no picture
+           }
+       }
+
+       function closePopup() {
+           popup.style.display = 'none';
+           overlay.style.display = 'none';
+       }
+
+       function saveChanges() {
+           if (currentSeat) {
+               const profileData = {
+                   profilePicture : preview.src,
+                   name : nameInput.value,
+                   bio : bioInput.value
+               };
+               
+               localStorage.setItem(currentSeat, JSON.stringify(profileData)); // Save data to local storage (Reminder: Change when using server)
+
+               // Update the displayed name below the seat ID!
+               const nameDisplayContainer = document.getElementById(`name-display-${currentSeat}`);
+               nameDisplayContainer.textContent = profileData.name || "Name"; // Display custom name or default
+
+               closePopup();
+           }
+       }
+
+       imageUpload.addEventListener('change', function(event) {
+           const file = event.target.files[0];
+
+           if (file) {
+               if (file.size > 3 * 1024 * 1024) { 
+                   alert("File size exceeds 3MB.");
+                   imageUpload.value = "";
+                   return; 
+               }
+               
+               const reader = new FileReader();
+               
+               reader.onload = function(e) {
+                   preview.src = e.target.result; // Load image
+                   removeButton.style.display = 'block'; // Show remove button
+               };
+               
+               reader.readAsDataURL(file);
+           }
+       });
+
+       function removeImage() {
+           imageUpload.value = '';
+           preview.src = ""; // Reset to empty src
+           removeButton.style.display = 'none'; // Hide remove button
+
+           if (currentSeat) {
+               const profileData = JSON.parse(localStorage.getItem(currentSeat)) || {};
+               profileData.profilePicture = ""; // Clear profile picture from saved data
+               localStorage.setItem(currentSeat, JSON.stringify(profileData)); // !!!!!!!!!!Update local storage!!!!!!!!!!!
+           }
+       }
+       createSeatLabels();
+   </script>
 </body>
 </html>
