@@ -20,23 +20,43 @@
             text-align: center;
         }
 
+        .container img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        #seats {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
         .seat-label {
             outline: 1px dashed blue;
             position: absolute;
-            border: 2px solid yellow; /* Bright yellow border for visibility */
-            background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent background */
-            color: black; /* Text color */
-            padding: 5px; /* Adjusted padding */
-            font-size: 14px; /* Adjusted font size */
+            border: 2px solid yellow;
+            background-color: rgba(255, 255, 255, 0.8);
+            color: black;
+            padding: 5px;
+            font-size: 14px;
             text-align: center;
-            transform: translate(-50%, -50%); /* Center text within rectangle */
-            width: calc(60px * 1.2); /* Increase width by 20% */
-            height: calc(30px * 1.2); /* Increase height by 20% */
+            width: 72px;
+            height: 36px;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            pointer-events: auto;
+            cursor: pointer;
         }
 
         .name-input {
-            width: calc(100% - 10px); /* Full width minus padding */
-            margin-top: 25px; /* Increased space between seat ID and Name input */
+            width: calc(100% - 10px);
+            margin-top: 25px;
         }
 
         .name-display {
@@ -44,23 +64,25 @@
             background-color: rgba(255, 255, 255, 0.8);
             border: 1px solid #ccc;
             padding: 5px;
-            text-overflow: ellipsis; /* Cut off long names with ellipsis */
-            overflow: hidden; /* Hide overflow text */
-            white-space: nowrap; /* Prevent wrapping */
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            font-size: 12px;
         }
 
         .overlay {
-            display: none; /* Hidden by default */
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 998;
         }
 
         #popup {
-            display: none; /* Hidden by default */
+            display: none;
             position: fixed;
             top: 50%;
             left: 50%;
@@ -69,13 +91,16 @@
             padding: 15px;
             border-radius: 25px;
             box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            z-index: 999;
+            width: 90%;
+            max-width: 400px;
         }
 
         #preview-container {
             width: 200px;
             height: 200px;
             border: 2px solid #ccc;
-            margin-bottom: 10px;
+            margin: 10px auto;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -85,7 +110,7 @@
         #preview {
             width: 100%;
             height: 100%;
-            object-fit: cover; 
+            object-fit: cover;
         }
 
         .remove-image {
@@ -94,59 +119,102 @@
             right: 5px;
             font-size: 20px;
             color: red;
-            cursor: pointer; 
+            cursor: pointer;
         }
         
         .button {
-          background-color: #ffffff;
-          border: none;
-          color: white;
-          padding: 16px 32px;
-          text-align: center;
-          text-decoration: none;
-          display: inline-block;
-          font-size: 16px;
-          margin-top :10px; 
-          transition-duration :0.4s; 
-          cursor :pointer; 
+            background-color: #ffffff;
+            border: none;
+            color: white;
+            padding: 16px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin-top: 10px;
+            transition-duration: 0.4s;
+            cursor: pointer;
         }
         
         .button5 {
-          background-color :white; 
-          color :black; 
-          border :2px solid #555555; 
-          border-radius :5px; 
+            background-color: white;
+            color: black;
+            border: 2px solid #555555;
+            border-radius: 5px;
         }
         
         .button5:hover {
-          background-color :#555555; 
-          color :white; 
+            background-color: #555555;
+            color: white;
         }
-        
+
+        /* Portrait mode */
+        @media screen and (max-width: 768px) and (orientation: portrait) {
+            .seat-label {
+                width: 40px;
+                height: 25px;
+                font-size: 10px;
+                padding: 2px;
+            }
+
+            .name-display {
+                font-size: 8px;
+                padding: 2px;
+                margin-top: 2px;
+            }
+        }
+
+        /* Landscape mode */
+        @media screen and (max-width: 915px) and (orientation: landscape) {
+            .seat-label {
+                width: 40px;
+                height: 25px;
+                font-size: 10px;
+                padding: 2px;
+            }
+
+            .name-display {
+                font-size: 8px;
+                padding: 2px;
+                margin-top: 0px;
+            }
+        }
+
+        /* Very small screens in both orientations */
+        @media screen and (max-width: 480px) {
+            .seat-label {
+                width: 25px;
+                height: 15px;
+                font-size: 9px;
+                padding: 1px;
+            }
+
+            .name-display {
+                font-size: 7px;
+                padding: 1px;
+                margin-top: 0px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Classroom Image -->
-        <img src="classroom_images/RM303_Image_of_whole_classroom.png" usemap="#image-map" alt="Classroom Seating Chart">
-        <!-- Dynamic Seat Labels -->
+        <img src="classroom_images/RM303_Image_of_whole_classroom.png" id="classroom-image" alt="Classroom Seating Chart">
         <div id="seats"></div>
-
     </div>
 
-    <!-- Popup for Profile Upload -->
     <div class="overlay" id="overlay" onclick="closePopup()"></div>
     <div id="popup">
-        <h2 id="seat-title" style="font-family:Ariel;font-size :20px;color :rgb(32,32,32);text-align:center;"></h2>
+        <h2 id="seat-title" style="font-family:Arial;font-size:20px;color:rgb(32,32,32);text-align:center;"></h2>
         
         <input type="file" id="imageUpload" accept="image/*">
         
         <div id="preview-container">
            <img id="preview" alt="" class="default">
            <span id="removeButton" class="remove-image" onclick="removeImage()">x</span>
-       </div>
+        </div>
        
-       <div id="additionalInfo">
+        <div id="additionalInfo">
            <label for="name">Name:</label><br>
            <input type="text" id="name" maxlength="20" name="name"><br><br>
            
@@ -154,164 +222,172 @@
            <textarea style="resize:none" id="bio" name="bio" rows="4" cols="50"></textarea><br><br>
            
            <button class="button button5" onclick="saveChanges()" style="display:block;margin:auto;">Save</button>
-       </div>
-   </div>
+        </div>
+    </div>
 
-   <script>
-       const popup = document.getElementById('popup');
-       const overlay = document.getElementById('overlay');
-       const imageUpload = document.getElementById('imageUpload');
-       const preview = document.getElementById('preview');
-       const nameInput = document.getElementById('name');
-       const bioInput = document.getElementById('bio');
-       const removeButton = document.getElementById('removeButton');
-       const seatTitle = document.getElementById('seat-title');
+    <script>
+        const popup = document.getElementById('popup');
+        const overlay = document.getElementById('overlay');
+        const imageUpload = document.getElementById('imageUpload');
+        const preview = document.getElementById('preview');
+        const nameInput = document.getElementById('name');
+        const bioInput = document.getElementById('bio');
+        const removeButton = document.getElementById('removeButton');
+        const seatTitle = document.getElementById('seat-title');
+        const classroomImage = document.getElementById('classroom-image');
 
-       let currentSeat = null;
+        let currentSeat = null;
 
-       // Define seat positions and IDs
-       const seats = [
-         { id:'1A1', left:'145px', top:'250px' },
-         { id:'1A2', left:'260px', top:'250px' },
-         { id:'1A3', left:'385px', top:'250px' },
-         { id:'1B1', left:'805px', top:'240.5px' },
-         { id:'1B2', left:'960px', top:'234.5px' },
-         { id:'1B3', left:'1077.5px', top:'226px' },
-         { id:'2B1', left:'748px', top:'149px'},
-         { id:'2B2', left:'849.5px', top:'145px'},
-         { id:'2B3', left:'955.5px', top:'140px'},
-         { id:'2B4', left:'1060.5px', top:'135.5px'},
-         { id:'2A1', left:'180.5px', top:'165px'},
-         { id:'2A2', left:'290.5px', top:'160.5px'},
-         { id:'2A3', left:'400px', top:'160.5px'},
-         { id:'2A4', left:'500.5px', top:'160.5px'}
-       ];
+        const seats = [
+            { id:'1A1', x: 9.58, y: 54.33 },
+            { id:'1A2', x: 21.67, y: 53.33 },
+            { id:'1A3', x: 33.08, y: 52.33 },
+            { id:'1B1', x: 66.58, y: 50.17 },
+            { id:'1B2', x: 79.00, y: 48.17 },
+            { id:'1B3', x: 94.29, y: 46.33 },
+            { id:'2B1', x: 63.33, y: 29.67 },
+            { id:'2B2', x: 73.79, y: 28.33 },
+            { id:'2B3', x: 84.63, y: 27.20 },
+            { id:'2B4', x: 95.38, y: 26.57 },
+            { id:'2A1', x: 9.04, y: 34.30 },
+            { id:'2A2', x: 19.21, y: 33.50 },
+            { id:'2A3', x: 29.33, y: 33.00 },
+            { id:'2A4', x: 39.71, y: 32.50 }
+        ];
 
-       // Will add more seats.
+        function updateSeatPositions() {
+            const seatsContainer = document.getElementById('seats');
+            const imageRect = classroomImage.getBoundingClientRect();
+            
+            seats.forEach(seat => {
+                const seatElement = document.getElementById(`seat-${seat.id}`);
+                if (seatElement) {
+                    seatElement.style.left = `${seat.x}%`;
+                    seatElement.style.top = `${seat.y}%`;
+                }
+            });
+        }
 
-       // Function to create seat labels dynamically
-       function createSeatLabels() {
-           const seatsContainer = document.getElementById('seats');
-           
-           seats.forEach(seat => {
-               const seatLabel = document.createElement('div');
-               seatLabel.className = 'seat-label';
-               seatLabel.style.left = seat.left;
-               seatLabel.style.top = seat.top;
+        function createSeatLabels() {
+            const seatsContainer = document.getElementById('seats');
+            seatsContainer.innerHTML = '';
+            
+            seats.forEach(seat => {
+                const seatLabel = document.createElement('div');
+                seatLabel.className = 'seat-label';
+                seatLabel.id = `seat-${seat.id}`;
+                seatLabel.style.left = `${seat.x}%`;
+                seatLabel.style.top = `${seat.y}%`;
 
-               // Display the seat ID
-               seatLabel.textContent = seat.id;
+                seatLabel.textContent = seat.id;
 
-               // Create a container for displaying the custom name
-               const nameDisplayContainer = document.createElement('div');
-               nameDisplayContainer.className = 'name-display';
-               nameDisplayContainer.id = `name-display-${seat.id}`;
-               nameDisplayContainer.textContent = "Name"; 
-               nameDisplayContainer.style.fontFamily = "Verdana, sans-serif";
-               nameDisplayContainer.style.fontSize = "12";
-               nameDisplayContainer.style.fontWeight = "normal";
-               nameDisplayContainer.style.color = "Black";
-               nameDisplayContainer.style.opacity = "0.7";
-               
-               seatLabel.appendChild(nameDisplayContainer);
-               
-               seatLabel.onclick = (event) => openPopup(seat.id);
+                const nameDisplayContainer = document.createElement('div');
+                nameDisplayContainer.className = 'name-display';
+                nameDisplayContainer.id = `name-display-${seat.id}`;
+                nameDisplayContainer.textContent = "Name"; 
+                nameDisplayContainer.style.fontFamily = "Verdana, sans-serif";
+                nameDisplayContainer.style.fontSize = "12";
+                nameDisplayContainer.style.fontWeight = "normal";
+                nameDisplayContainer.style.color = "Black";
+                nameDisplayContainer.style.opacity = "0.7";
+                
+                seatLabel.appendChild(nameDisplayContainer);
+                seatLabel.onclick = (event) => openPopup(seat.id);
 
-               seatsContainer.appendChild(seatLabel);
-           });
-       }
+                seatsContainer.appendChild(seatLabel);
+            });
+        }
 
-       function openPopup(seatId) {
-           currentSeat = seatId;
+        function openPopup(seatId) {
+            currentSeat = seatId;
+            seatTitle.textContent = `Seat ID: ${seatId}`;
+            seatTitle.style.fontFamily = "Arial";
+            seatTitle.style.fontSize = "20px";
+            seatTitle.style.fontWeight = "bold";
 
-           // Set the title to the selected seat ID
-           seatTitle.textContent = `Seat ID: ${seatId}`;
-           seatTitle.style.fontFamily = "Arial";
-           seatTitle.style.fontSize = "20px";
-           seatTitle.style.fontWeight = "bold";
+            popup.style.display = 'block';
+            overlay.style.display = 'block';
 
+            preview.src = "";
+            removeButton.style.display = 'none';
+            nameInput.value = ''; 
+            bioInput.value = ''; 
 
-           popup.style.display = 'block';
-           overlay.style.display = 'block';
+            loadSavedData();
+        }
 
+        function loadSavedData() {
+            const savedData = JSON.parse(localStorage.getItem(currentSeat)) || {};
+            preview.src = savedData.profilePicture || "";
+            nameInput.value = savedData.name || ""; 
+            bioInput.value = savedData.bio || ""; 
 
-           preview.src = ""; // Reset preview
-           removeButton.style.display = 'none';
-           nameInput.value = ''; 
-           bioInput.value = ''; 
+            if (savedData.profilePicture) {
+                removeButton.style.display = 'block';
+            } else {
+                removeButton.style.display = 'none';
+            }
+        }
 
-           loadSavedData();
-       }
+        function closePopup() {
+            popup.style.display = 'none';
+            overlay.style.display = 'none';
+        }
 
-       function loadSavedData() {
-           const savedData = JSON.parse(localStorage.getItem(currentSeat)) || {};
-           preview.src = savedData.profilePicture || "";
-           nameInput.value = savedData.name || ""; 
-           bioInput.value = savedData.bio || ""; 
+        function saveChanges() {
+            if (currentSeat) {
+                const profileData = {
+                    profilePicture: preview.src,
+                    name: nameInput.value,
+                    bio: bioInput.value
+                };
+                
+                localStorage.setItem(currentSeat, JSON.stringify(profileData));
 
-           if (savedData.profilePicture) {
-               removeButton.style.display = 'block'; // Show remove button if there's a picture
-           } else {
-               removeButton.style.display = 'none'; // Hide remove button if no picture
-           }
-       }
+                const nameDisplayContainer = document.getElementById(`name-display-${currentSeat}`);
+                nameDisplayContainer.textContent = profileData.name || "Name";
 
-       function closePopup() {
-           popup.style.display = 'none';
-           overlay.style.display = 'none';
-       }
+                closePopup();
+            }
+        }
 
-       function saveChanges() {
-           if (currentSeat) {
-               const profileData = {
-                   profilePicture : preview.src,
-                   name : nameInput.value,
-                   bio : bioInput.value
-               };
-               
-               localStorage.setItem(currentSeat, JSON.stringify(profileData)); // Save data to local storage (Reminder: Change when using server)
+        imageUpload.addEventListener('change', function(event) {
+            const file = event.target.files[0];
 
-               // Update the displayed name below the seat ID!
-               const nameDisplayContainer = document.getElementById(`name-display-${currentSeat}`);
-               nameDisplayContainer.textContent = profileData.name || "Name"; // Display custom name or default
+            if (file) {
+                if (file.size > 3 * 1024 * 1024) { 
+                    alert("File size exceeds 3MB.");
+                    imageUpload.value = "";
+                    return; 
+                }
+                
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    removeButton.style.display = 'block';
+                };
+                
+                reader.readAsDataURL(file);
+            }
+        });
 
-               closePopup();
-           }
-       }
+        function removeImage() {
+            imageUpload.value = '';
+            preview.src = "";
+            removeButton.style.display = 'none';
 
-       imageUpload.addEventListener('change', function(event) {
-           const file = event.target.files[0];
-
-           if (file) {
-               if (file.size > 3 * 1024 * 1024) { 
-                   alert("File size exceeds 3MB.");
-                   imageUpload.value = "";
-                   return; 
-               }
-               
-               const reader = new FileReader();
-               
-               reader.onload = function(e) {
-                   preview.src = e.target.result; // Load image
-                   removeButton.style.display = 'block'; // Show remove button
-               };
-               
-               reader.readAsDataURL(file);
-           }
-       });
-
-       function removeImage() {
-           imageUpload.value = '';
-           preview.src = ""; // Reset to empty src
-           removeButton.style.display = 'none'; // Hide remove button
-
-           if (currentSeat) {
-               const profileData = JSON.parse(localStorage.getItem(currentSeat)) || {};
-               profileData.profilePicture = ""; // Clear profile picture from saved data
-               localStorage.setItem(currentSeat, JSON.stringify(profileData)); // !!!!!!!!!!Update local storage!!!!!!!!!!!
-           }
-       }
-       createSeatLabels();
-   </script>
+            if (currentSeat) {
+                const profileData = JSON.parse(localStorage.getItem(currentSeat)) || {};
+                profileData.profilePicture = "";
+                localStorage.setItem(currentSeat, JSON.stringify(profileData));
+            }
+        }
+        
+        window.addEventListener('resize', updateSeatPositions);
+        classroomImage.addEventListener('load', createSeatLabels);
+        
+        createSeatLabels();
+    </script>
 </body>
 </html>
