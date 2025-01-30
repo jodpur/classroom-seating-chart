@@ -271,32 +271,36 @@
         function createSeatLabels() {
             const seatsContainer = document.getElementById('seats');
             seatsContainer.innerHTML = '';
-            
-            seats.forEach(seat => {
-                const seatLabel = document.createElement('div');
-                seatLabel.className = 'seat-label';
-                seatLabel.id = `seat-${seat.id}`;
-                seatLabel.style.left = `${seat.x}%`;
-                seatLabel.style.top = `${seat.y}%`;
+    
+        seats.forEach(seat => {
+            const seatLabel = document.createElement('div');
+            seatLabel.className = 'seat-label';
+            seatLabel.id = `seat-${seat.id}`;
+            seatLabel.style.left = `${seat.x}%`;
+            seatLabel.style.top = `${seat.y}%`;
 
-                seatLabel.textContent = seat.id;
+            seatLabel.textContent = seat.id;
 
-                const nameDisplayContainer = document.createElement('div');
-                nameDisplayContainer.className = 'name-display';
-                nameDisplayContainer.id = `name-display-${seat.id}`;
-                nameDisplayContainer.textContent = "Name"; 
-                nameDisplayContainer.style.fontFamily = "Verdana, sans-serif";
-                nameDisplayContainer.style.fontSize = "12";
-                nameDisplayContainer.style.fontWeight = "normal";
-                nameDisplayContainer.style.color = "Black";
-                nameDisplayContainer.style.opacity = "0.7";
-                
-                seatLabel.appendChild(nameDisplayContainer);
-                seatLabel.onclick = (event) => openPopup(seat.id);
+            const nameDisplayContainer = document.createElement('div');
+            nameDisplayContainer.className = 'name-display';
+            nameDisplayContainer.id = `name-display-${seat.id}`;
+        
+        // Load saved name from localStorage if it exists!!! WILL BE REPLACED WITH SOME OTHER STORAGE METHOD!
+        const savedData = JSON.parse(localStorage.getItem(seat.id)) || {};
+        nameDisplayContainer.textContent = savedData.name || "Name";
+        
+        nameDisplayContainer.style.fontFamily = "Verdana, sans-serif";
+        nameDisplayContainer.style.fontSize = "12";
+        nameDisplayContainer.style.fontWeight = "normal";
+        nameDisplayContainer.style.color = "Black";
+        nameDisplayContainer.style.opacity = "0.7";
+        
+        seatLabel.appendChild(nameDisplayContainer);
+        seatLabel.onclick = (event) => openPopup(seat.id);
 
-                seatsContainer.appendChild(seatLabel);
-            });
-        }
+        seatsContainer.appendChild(seatLabel);
+    });
+}
 
         function openPopup(seatId) {
             currentSeat = seatId;
@@ -384,6 +388,29 @@
             }
         }
         
+        function initializeSavedData() {
+            seats.forEach(seat => {
+            const nameDisplayContainer = document.getElementById(`name-display-${seat.id}`);
+
+            if (nameDisplayContainer) {
+                const savedData = JSON.parse(localStorage.getItem(seat.id)) || {};
+                nameDisplayContainer.textContent = savedData.name || "Name";
+        }
+    });
+}
+
+
+window.addEventListener('resize', updateSeatPositions);
+classroomImage.addEventListener('load', () => {
+    createSeatLabels();
+    initializeSavedData();
+});
+
+// Important: Initial creation and data load
+createSeatLabels();
+initializeSavedData();
+
+
         window.addEventListener('resize', updateSeatPositions);
         classroomImage.addEventListener('load', createSeatLabels);
         
