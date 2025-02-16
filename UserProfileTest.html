@@ -1,733 +1,633 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Classroom Seating Chart</title>
-    <style>
+  <meta charset="UTF-8" />
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Classroom Seating Chart</title>
+  <style>
+    :root {
+      --vh: 1vh;
+    }
     
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
-}
-
-.container {
-    outline: 2px solid rgb(0, 0, 0);
-    position: relative;
-    max-width: 1200px;
-    margin: 20px auto;
-    text-align: center;
-}
-
-.container img {
-    width: 100%;
-    height: auto;
-    display: block;
-}
-
-
-#seats {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-}
-
-.seat-label {
-    outline: 1px dashed blue;
-    position: absolute;
-    border: 2px solid yellow;
-    background-color: rgba(255, 255, 255, 0.8);
-    color: black;
-    padding: 5px;
-    font-size: 14px;
-    text-align: center;
-    width: 72px;
-    height: 36px;
-    transform: translate(-50%, -50%);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    pointer-events: auto;
-    cursor: pointer;
-    transition: transform 0.2s ease;
-}
-
-.seat-label:hover {
-    transform: translate(-50%, -50%) scale(1.1);
-}
-
-.name-input {
-    width: calc(100% - 10px);
-    margin-top: 25px;
-}
-
-.name-display {
-    width: calc(100% - 10px);
-    background-color: rgba(255, 255, 255, 0.8);
-    border: 1px solid #ccc;
-    padding: 5px;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-    font-size: 12px;
-}
-
-.overlay {
-    opacity: 100;
-    transition: opacity 300ms cubic-bezier(0.4, 0.0, 0.2, 1);
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 998;
-}
-
-body.popup-open {
-    overflow: hidden;
-    position: fixed;
-    width: 100%;
-    height: 100%;
-}
-
-
-.overlay.show {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 998;
-    overscroll-behavior: contain;
-}
-
-#popup {
-    display: none;
-    overscroll-behavior: contain;
-    position: fixed;
-    top: 50%;
-    max-height: 80vh;
-    overflow-y: auto;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: white;
-    border-radius: 16px;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.10), 0 6px 6px rgba(0,0,0,0.16);
-    z-index: 999;
-    width: 162px;
-    height: 32px;
-    overflow: hidden;
-    transition: width 300ms cubic-bezier(0.4, 0.0, 0.2, 1),
-                height 300ms cubic-bezier(0.4, 0.0, 0.2, 1),
-                border-radius 300ms cubic-bezier(0.4, 0.0, 0.2, 1);
-}
-
-#popup.expand {
-    width: 90%;
-    max-width: 400px;
-    height: auto;
-    max-height: 80vh;
-    border-radius: 25px;
-}
-
-.popup-header {
-    background: #f5ac46;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 70px;
-    width: 100%;
-    position: relative;
-    padding: 0 15px;
-    box-sizing: border-box;
-}
-
-#preview-container {
-    width: 150px;
-    height: 150px;
-    border: 2px solid #ccc;
-    margin: 20px auto;
-    border-radius: 10px;
-    overflow: hidden;
-}
-
-#popup.expand .remove-image {
-    opacity: 1;
-}
-
-.popup-content {
-    opacity: 0;
-    max-height: 60vh;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    transform: scale(0.7);
-    transition: opacity 300ms cubic-bezier(0.4, 0.0, 0.2, 1),
-                transform 300ms cubic-bezier(0.4, 0.0, 0.2, 1);
-    padding: 20px;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-#popup.expand .popup-content {
-    opacity: 1;
-    transform: scale(1);
-}
-
-#seat-title {
-    color: #000000;
-    font-size: 24px; /* Default size for larger screens */
-    margin: 0;
-    text-align: center;
-    width: 100%;
-    font-family: Arial;
-    font-weight: bold;
-    transform: translateX(20px);
-}
-
-.close-button {
-    margin-left: auto;
-    width: 30px;
-    height: 28px;
-    border-radius: 15px;
-    background-color: white;
-    color: black;
-    border: 2px solid #555555;
-    border-radius: 5px;
-    position: relative;
-    cursor: pointer;
-    transition: background 200ms ease;
-}
-
-.close-button:hover {
-    color: white;
-    background-color: #0e0009;
-}
-
-.close-button::before,
-.close-button::after {
-    content: '';
-    position: absolute;
-    width: 2px;
-    height: 15px;
-    background: #000000;
-    top: 50%;
-    left: 50%;
-}
-
-.close-button::before {
-    transform: translate(-50%, -50%) rotate(45.5deg);
-}
-
-.close-button::after {
-    transform: translate(-50%, -50%) rotate(-45deg);
-}
-
-.button {
-    background-color: white;
-    color: black;
-    border: 2px solid #555555;
-    border-radius: 5px;
-    padding: 16px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin-top: 10px;
-    transition-duration: 0.4s;
-    cursor: pointer;
-    display: block; 
-    margin: 0 auto;
-}
-
-.button:hover {
-    background-color: #0e0009;
-    transform: translateY(-1px);
-    color: white;
-}
-
-.popup-form {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-}
-
-input[type="text"],
-textarea {
-    width: 100%;
-    padding: 8px;
-    margin: 5px 0;
-    border: 1px solid #D2D1D4;
-    border-radius: 8px;
-    font-size: 16px;
-    box-sizing: border-box;
-    transition: border-color 0.3s ease;
-}
-
-input[type="text"]:focus,
-textarea:focus {
-    outline: none;
-    border-color: #aa7e48;
-}
-
-/* Portrait mode */
-@media screen and (max-width: 768px) and (orientation: portrait) {
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+      overflow-x: hidden;
+      overflow-y: scroll;
+    }
+    
+    .container {
+      outline: 2px solid rgb(0, 0, 0);
+      position: relative;
+      max-width: 1200px;
+      margin: 20px auto;
+      text-align: center;
+    }
+    
+    .container img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    
+    #seats {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+    
     .seat-label {
+      outline: 1px dashed blue;
+      position: absolute;
+      border: 2px solid yellow;
+      background-color: rgba(255, 255, 255, 0.8);
+      color: black;
+      padding: 5px;
+      font-size: 14px;
+      text-align: center;
+      width: 72px;
+      height: 36px;
+      transform: translate(-50%, -50%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      pointer-events: auto;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    
+    .seat-label:hover {
+      transform: translate(-50%, -50%) scale(1.1);
+    }
+    
+    .name-display {
+      width: calc(100% - 10px);
+      background-color: rgba(255, 255, 255, 0.8);
+      border: 1px solid #ccc;
+      padding: 5px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      font-size: 12px;
+    }
+    
+    .overlay {
+      opacity: 100;
+      transition: opacity 300ms cubic-bezier(0.4, 0.0, 0.2, 1);
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 998;
+      overflow-y: auto;
+    }
+    
+    .overlay.show {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 998;
+      overscroll-behavior: contain;
+    }
+    
+    #popup {
+      display: none;
+      overscroll-behavior: contain;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: white;
+      border-radius: 16px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.10), 0 6px 6px rgba(0, 0, 0, 0.16);
+      z-index: 999;
+      width: 162px;
+      height: 32px;
+      overflow: hidden;
+      transition: width 300ms cubic-bezier(0.4, 0.0, 0.2, 1),
+                  height 300ms cubic-bezier(0.4, 0.0, 0.2, 1),
+                  border-radius 300ms cubic-bezier(0.4, 0.0, 0.2, 1);
+    }
+    
+    #popup.expand {
+      width: 90%;
+      max-width: 400px;
+      height: auto;
+      max-height: calc(var(--vh, 1vh) * 80);
+      border-radius: 25px;
+    }
+    
+    .popup-header {
+      background: #f5ac46;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 70px;
+      width: 100%;
+      position: relative;
+      padding: 0 15px;
+      box-sizing: border-box;
+    }
+    
+    #preview-container {
+      width: 150px;
+      height: 150px;
+      border: 2px solid #ccc;
+      margin: 20px auto;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    
+    .popup-content {
+      opacity: 0;
+      max-height: calc(var(--vh, 1vh) * 60);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      transform: scale(0.7);
+      transition: opacity 300ms cubic-bezier(0.4, 0.0, 0.2, 1),
+                  transform 300ms cubic-bezier(0.4, 0.0, 0.2, 1);
+      padding: 20px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    
+    #popup.expand .popup-content {
+      opacity: 1;
+      transform: scale(1);
+    }
+    
+    #classroom-image {
+      pointer-events: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+    
+    #seat-title {
+      color: #000;
+      font-size: 24px;
+      margin: 0;
+      text-align: center;
+      width: 100%;
+      font-family: Arial;
+      font-weight: bold;
+      transform: translateX(20px);
+    }
+    
+    .close-button {
+      margin-left: auto;
+      width: 30px;
+      height: 28px;
+      background-color: white;
+      color: black;
+      border: 2px solid #555;
+      border-radius: 5px;
+      position: relative;
+      cursor: pointer;
+      transition: background 200ms ease;
+    }
+    
+    .close-button:hover {
+      background-color: #0e0009;
+      color: white;
+    }
+    
+    .close-button::before,
+    .close-button::after {
+      content: '';
+      position: absolute;
+      width: 2px;
+      height: 15px;
+      background: #000;
+      top: 50%;
+      left: 50%;
+    }
+    
+    .close-button::before {
+      transform: translate(-50%, -50%) rotate(45.5deg);
+    }
+    
+    .close-button::after {
+      transform: translate(-50%, -50%) rotate(-45deg);
+    }
+    
+    .button {
+      background-color: white;
+      color: black;
+      border: 2px solid #555;
+      border-radius: 5px;
+      padding: 16px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: block;
+      font-size: 16px;
+      margin: 10px auto 0;
+      transition-duration: 0.4s;
+      cursor: pointer;
+    }
+    
+    .button:hover {
+      background-color: #0e0009;
+      transform: translateY(-1px);
+      color: white;
+    }
+    
+    .popup-form {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+    }
+    
+    input[type="text"],
+    textarea {
+      width: 100%;
+      padding: 8px;
+      margin: 5px 0;
+      border: 1px solid #D2D1D4;
+      border-radius: 8px;
+      font-size: 16px;
+      box-sizing: border-box;
+      transition: border-color 0.3s ease;
+    }
+    
+    input[type="text"]:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #aa7e48;
+    }
+    
+    /* Portrait mode */
+    @media screen and (max-width: 768px) and (orientation: portrait) {
+      .seat-label {
         width: 40px;
         height: 25px;
         font-size: 10px;
         padding: 2px;
-    }
-
-    .name-display {
+      }
+      .name-display {
         font-size: 8px;
         padding: 2px;
         margin-top: 2px;
-    }
-
-    #popup.expand {
+      }
+      #popup.expand {
         max-width: 200px;
         min-width: 150px;
-        max-height: 80vh;
-    }
-
-    #preview-container {
+        max-height: calc(var(--vh, 1vh) * 80);
+      }
+      #preview-container {
         width: 120px;
         height: 120px;
-    }
-
-    #popup {
+      }
+      #popup {
         width: 140px;
+      }
+      #seat-title {
+        font-size: 18px;
+      }
     }
-
-    #seat-title {
-        font-size: 18px; /* For portrait tablets */
-    }
-}
-
-/* Landscape mode */
-@media screen and (max-width: 915px) and (orientation: landscape) {
-    .seat-label {
+    
+    /* Landscape mode */
+    @media screen and (max-width: 915px) and (orientation: landscape) {
+      .seat-label {
         width: 40px;
         height: 25px;
         font-size: 10px;
         padding: 2px;
-    }
-
-    .name-display {
+      }
+      .name-display {
         font-size: 8px;
         padding: 2px;
-        margin-top: 0px;
-    }
-
-    #popup {
+        margin-top: 0;
+      }
+      #popup {
         width: 140px;
-    }
-
-    #popup.expand {
+      }
+      #popup.expand {
         width: 85%;
         max-width: 300px;
         height: auto;
-        max-height: 90vh;
-    }
-
-    .popup-content {
-        max-height: 70vh;
+        max-height: calc(var(--vh, 1vh) * 90);
+      }
+      .popup-content {
+        max-height: calc(var(--vh, 1vh) * 70);
         padding: 15px;
-    }
-
-    .popup-header {
+      }
+      .popup-header {
         height: 50px;
-    }
-
-    #seat-title {
-        font-size: 20px; /* Adjusted for landscape mode */
-    }
-
-    #preview-container {
+      }
+      #seat-title {
+        font-size: 20px;
+      }
+      #preview-container {
         width: 100px;
         height: 100px;
         margin: 10px auto;
-    }
-
-    .form-field {
+      }
+      .form-field {
         margin-bottom: 10px;
-    }
-
-    input[type="text"],
-    textarea {
+      }
+      input[type="text"],
+      textarea {
         padding: 6px;
-    }
-
-    .button {
+      }
+      .button {
         padding: 8px 16px;
         margin-top: 5px;
+      }
     }
-}
-
-/* Small screens */
-@media screen and (max-width: 480px) {
-    .seat-label {
+    
+    /* Small screens */
+    @media screen and (max-width: 480px) {
+      .seat-label {
         width: 25px;
         height: 15px;
         font-size: 9px;
         padding: 1px;
-    }
-
-    .name-display {
+      }
+      .name-display {
         font-size: 7px;
         padding: 1px;
-        margin-top: 0px;
-    }
-
-    #popup.expand {
+        margin-top: 0;
+      }
+      #popup.expand {
         width: 90%;
         max-width: 75vw;
-        max-height: 95vh;
-        margin: 0px;
+        max-height: calc(var(--vh, 1vh) * 95);
+        margin: 0;
         padding: 8px;
-    }
-
-    .popup-content {
+      }
+      .popup-content {
         padding: 10px;
-    }
-
-    .popup-header {
+      }
+      .popup-header {
         height: 40px;
-        padding: 0 0px;
-    }
-
-    #seat-title {
-        font-size: 16px; /* Adjust for mobile phones here!*/
+        padding: 0;
+      }
+      #seat-title {
+        font-size: 16px;
         margin: 0 auto;
-    }
-
-    #preview-container {
+      }
+      #preview-container {
         width: 80px;
         height: 80px;
         margin: 10px auto;
-    }
-
-    .button {
+      }
+      .button {
         padding: 6px 12px;
         font-size: 14px;
+      }
     }
-        }
-    </style>
+  </style>
 </head>
 <body>
-    <div class="container">
-        <img src="classroom_images/Improved_New.png" id="classroom-image" alt="Classroom Seating Chart">
-        <div id="seats"></div>
+  <div class="container">
+    <img src="classroom_images/Improved_New.png" id="classroom-image" alt="Classroom Seating Chart" draggable="false">
+    <div id="seats"></div>
+  </div>
+  
+  <div class="overlay" id="overlay"></div>
+  
+  <div id="popup">
+    <div class="popup-header">
+      <h2 id="seat-title" style="font-family: Arial; font-size: 20px; font-weight: bold; color: rgb(0, 0, 0); text-align: center; width: 100%; margin: 0; transform: translateX(20px);"></h2>
+      <div class="close-button" onclick="closePopup()"></div>
     </div>
-
-    <div class="overlay" id="overlay" onclick="closePopup()"></div>
-    <div id="popup">
-        <div class="popup-header">
-            <h2 id="seat-title" style="font-family: Arial; font-size: 20px; font-weight: bold; color: rgb(0, 0, 0); text-align: center; width: 100%; margin: 0; transform: translateX(20px);"></h2>
-            <div class="close-button" onclick="closePopup()"></div>
+    <div class="popup-content">
+      <input type="file" id="imageUpload" accept="image/*" />
+      <div id="preview-container">
+        <img id="preview" alt="" class="default" />
+      </div>
+      <form id="seatForm" class="popup-form" onsubmit="handleFormSubmit(event)">
+        <div class="form-field">
+          <label for="name">Name:</label>
+          <input type="text" id="name" maxlength="20" name="name" />
         </div>
-        
-        <div class="popup-content">
-            <input type="file" id="imageUpload" accept="image/*">
-            
-            <div id="preview-container">
-                <img id="preview" alt="" class="default">
-            </div>
-            
-        <form id="seatForm" class="popup-form" onsubmit="handleFormSubmit(event)">
-            <div class="form-field">
-                <label for="name">Name:</label>
-                <input type="text" id="name" maxlength="20" name="name">
-            </div>
-            
-            <div class="form-field">
-                <label for="bio">Questions and Answers:</label>
-                <textarea id="bio" name="bio" rows="4" style="resize:none"></textarea>
-            </div>
-            
-            <button class="button" onclick="saveChanges()">Save</button>
-            <button type="submit" style="display: none;">Done</button>
-        </form>
+        <div class="form-field">
+          <label for="bio">Questions and Answers:</label>
+          <textarea id="bio" name="bio" rows="4" style="resize: none"></textarea>
         </div>
+        <button class="button" onclick="saveChanges(event)">Save</button>
+        <button type="submit" style="display: none;">Done</button>
+      </form>
     </div>
-
-    <script>
-        const popup = document.getElementById('popup');
-        const overlay = document.getElementById('overlay');
-        const imageUpload = document.getElementById('imageUpload');
-        const preview = document.getElementById('preview');
-        const nameInput = document.getElementById('name');
-        const bioInput = document.getElementById('bio');
-        const removeButton = document.getElementById('removeButton');
-        const seatTitle = document.getElementById('seat-title');
-        const classroomImage = document.getElementById('classroom-image');
-
-        let currentSeat = null;
-
-        /* Seat Positions*/
-
-        const seats = [
-            { id:'1A1', x: 9.58, y: 54.33 },
-            { id:'1A2', x: 21.67, y: 53.33 },
-            { id:'1A3', x: 33.08, y: 52.33 },
-            { id:'1B1', x: 66.58, y: 50.17 },
-            { id:'1B2', x: 79.00, y: 48.17 },
-            { id:'1B3', x: 94.29, y: 46.33 },
-            { id:'2B1', x: 63.33, y: 29.67 },
-            { id:'2B2', x: 73.79, y: 28.33 },
-            { id:'2B3', x: 84.63, y: 27.20 },
-            { id:'2B4', x: 95.38, y: 26.57 },
-            { id:'2A1', x: 9.04, y: 34.30 },
-            { id:'2A2', x: 19.21, y: 33.50 },
-            { id:'2A3', x: 29.33, y: 33.00 },
-            { id:'2A4', x: 39.71, y: 32.50 }
-        ];
-
-        function updateSeatPositions() {
-            const seatsContainer = document.getElementById('seats');
-            seats.forEach(seat => {
-                const seatElement = document.getElementById(`seat-${seat.id}`);
-                if (seatElement) {
-                    seatElement.style.left = `${seat.x}%`;
-                    seatElement.style.top = `${seat.y}%`;
-                }
-            });
-        }
-
-        function createSeatLabels() {
-            const seatsContainer = document.getElementById('seats');
-            seatsContainer.innerHTML = '';
+  </div>
+  
+  <script>
     
-            seats.forEach(seat => {
-                const seatLabel = document.createElement('div');
-                seatLabel.className = 'seat-label';
-                seatLabel.id = `seat-${seat.id}`;
-                seatLabel.style.left = `${seat.x}%`;
-                seatLabel.style.top = `${seat.y}%`;
-
-                seatLabel.textContent = seat.id;
-
-                const nameDisplayContainer = document.createElement('div');
-                nameDisplayContainer.className = 'name-display';
-                nameDisplayContainer.id = `name-display-${seat.id}`;
-            
-                const savedData = JSON.parse(localStorage.getItem(seat.id)) || {};
-                nameDisplayContainer.textContent = savedData.name || "Name";
-                
-                nameDisplayContainer.style.fontFamily = "Verdana, sans-serif";
-                nameDisplayContainer.style.fontSize = "12";
-                nameDisplayContainer.style.fontWeight = "normal";
-                nameDisplayContainer.style.color = "Black";
-                nameDisplayContainer.style.opacity = "0.7";
-                
-                seatLabel.appendChild(nameDisplayContainer);
-                seatLabel.onclick = (event) => openPopup(seat.id);
-
-                seatsContainer.appendChild(seatLabel);
-            });
+    function setViewportProperty() {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    }
+    window.addEventListener('load', setViewportProperty);
+    window.addEventListener('resize', setViewportProperty);
+    
+    //scrolling part//
+    let scrollPosition = 0;
+    
+    function disableBodyScroll() {
+      scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+      window.addEventListener('scroll', lockScroll);
+      window.addEventListener('wheel', lockScroll, { passive: false });
+      window.addEventListener('touchmove', lockScroll, { passive: false });
+    }
+    
+    function lockScroll(e) {
+      window.scrollTo(0, scrollPosition);
+      if(e.cancelable) {
+        e.preventDefault();
+      }
+    }
+    
+    function enableBodyScroll() {
+      window.removeEventListener('scroll', lockScroll);
+      window.removeEventListener('wheel', lockScroll);
+      window.removeEventListener('touchmove', lockScroll);
+      window.scrollTo(0, scrollPosition);
+    }
+    
+    function isMobileDevice() {
+      return ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+    }
+    
+    const popup = document.getElementById('popup');
+    const overlay = document.getElementById('overlay');
+    const imageUpload = document.getElementById('imageUpload');
+    const preview = document.getElementById('preview');
+    const nameInput = document.getElementById('name');
+    const bioInput = document.getElementById('bio');
+    const seatTitle = document.getElementById('seat-title');
+    
+    let currentSeat = null;
+    
+    // Seat positions here
+    const seats = [
+      { id: '1A1', x: 9.58, y: 54.33 },
+      { id: '1A2', x: 21.67, y: 53.33 },
+      { id: '1A3', x: 33.08, y: 52.33 },
+      { id: '1B1', x: 66.58, y: 50.17 },
+      { id: '1B2', x: 79.0, y: 48.17 },
+      { id: '1B3', x: 94.29, y: 46.33 },
+      { id: '2B1', x: 63.33, y: 29.67 },
+      { id: '2B2', x: 73.79, y: 28.33 },
+      { id: '2B3', x: 84.63, y: 27.2 },
+      { id: '2B4', x: 95.38, y: 26.57 },
+      { id: '2A1', x: 9.04, y: 34.3 },
+      { id: '2A2', x: 19.21, y: 33.5 },
+      { id: '2A3', x: 29.33, y: 33.0 },
+      { id: '2A4', x: 39.71, y: 32.5 }
+    ];
+    
+    // Seat positions when resized
+    function updateSeatPositions() {
+      const seatsContainer = document.getElementById('seats');
+      seats.forEach(seat => {
+        const seatElement = document.getElementById(`seat-${seat.id}`);
+        if (seatElement) {
+          seatElement.style.left = `${seat.x}%`;
+          seatElement.style.top = `${seat.y}%`;
         }
-
-        function openPopup(seatId) {
-
-            function preventBodyScroll(e) {
-                if (!popup.contains(e.target)) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                }
-            }
-
-            document.body.classList.add('popup-open');            
-            document.body.addEventListener('touchmove', preventBodyScroll, { passive: false });
-            currentSeat = seatId;
-            
-            seatTitle.textContent = `Seat ${seatId}`;
-            popup.style.display = 'block';
-            overlay.style.display = 'block';
-
-            popup.offsetHeight;
-            requestAnimationFrame(() => {
-                popup.classList.add('expand');
-                overlay.classList.add('show');
-            });
-
-            if (removeButton) {
-                removeButton.style.display = 'none';
-            }
-            
-            nameInput.value = ''; 
-            bioInput.value = ''; 
-
-            loadSavedData();
-            addKeyboardListeners();
+      });
+    }
+    
+    function createSeatLabels() {
+      const seatsContainer = document.getElementById('seats');
+      seatsContainer.innerHTML = '';
+      seats.forEach(seat => {
+        const seatLabel = document.createElement('div');
+        seatLabel.className = 'seat-label';
+        seatLabel.id = `seat-${seat.id}`;
+        seatLabel.style.left = `${seat.x}%`;
+        seatLabel.style.top = `${seat.y}%`;
+        seatLabel.textContent = seat.id;
+        const nameDisplayContainer = document.createElement('div');
+        nameDisplayContainer.className = 'name-display';
+        nameDisplayContainer.id = `name-display-${seat.id}`;
+        const savedData = JSON.parse(localStorage.getItem(seat.id)) || {};
+        nameDisplayContainer.textContent = savedData.name || 'Name';
+        nameDisplayContainer.style.fontFamily = 'Verdana, sans-serif';
+        nameDisplayContainer.style.fontSize = '12px';
+        nameDisplayContainer.style.fontWeight = 'normal';
+        nameDisplayContainer.style.color = 'Black';
+        nameDisplayContainer.style.opacity = '0.7';
+        seatLabel.appendChild(nameDisplayContainer);
+        seatLabel.onclick = () => openPopup(seat.id);
+        seatsContainer.appendChild(seatLabel);
+      });
+    }
+    
+    function openPopup(seatId) {
+      currentSeat = seatId;
+      seatTitle.textContent = `Seat ${seatId}`;
+      popup.style.display = 'block';
+      overlay.style.display = 'block';
+      
+      disableBodyScroll();
+      
+      popup.offsetHeight;
+      requestAnimationFrame(() => {
+        popup.classList.add('expand');
+        overlay.classList.add('show');
+      });
+      nameInput.value = '';
+      bioInput.value = '';
+      loadSavedData();
+      addKeyboardListeners();
+    }
+    
+    function addKeyboardListeners() {
+      nameInput.addEventListener('focus', scrollIntoView);
+      bioInput.addEventListener('focus', scrollIntoView);
+    }
+    
+    function scrollIntoView() {
+      setTimeout(() => {
+        if (this.scrollIntoViewIfNeeded) {
+          this.scrollIntoViewIfNeeded(true);
+        } else {
+          this.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+          });
         }
-
-
-        function addKeyboardListeners() {
-
-            nameInput.addEventListener('focus', scrollIntoView);
-            bioInput.addEventListener('focus', scrollIntoView);
+      }, 300);
+    }
+    
+    function loadSavedData() {
+      const savedData = JSON.parse(localStorage.getItem(currentSeat)) || {};
+      preview.src = savedData.profilePicture || '';
+      nameInput.value = savedData.name || '';
+      bioInput.value = savedData.bio || '';
+    }
+    
+    function closePopup() {
+      popup.classList.remove('expand');
+      overlay.classList.remove('show');
+      setTimeout(() => {
+        popup.style.display = 'none';
+        overlay.style.display = 'none';
+      }, 0);
+      
+      enableBodyScroll();
+    }
+    
+    popup.addEventListener('wheel', function (e) {
+      e.stopPropagation();
+    }, { passive: false });
+    
+    imageUpload.addEventListener('change', function () {
+      const file = this.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (event) {
+          preview.src = event.target.result;
         }
-
-        function scrollIntoView() {
-            setTimeout(() => {
-                if (this.scrollIntoViewIfNeeded) {
-                    this.scrollIntoViewIfNeeded(true);
-                } else {
-                    this.scrollIntoView({ 
-                        behavior: 'smooth', 
-                        block: 'center' 
-                    });
-                }
-            }, 300);
-        }
-
-
-        function preventBodyScroll(e) {
-
-            if (!popup.contains(e.target) || !isDescendant(popup, e.target)) {
-                e.preventDefault();
-            }
-        }
-
-        function loadSavedData() {
-            const savedData = JSON.parse(localStorage.getItem(currentSeat)) || {};
-            preview.src = savedData.profilePicture || "";
-            nameInput.value = savedData.name || ""; 
-            bioInput.value = savedData.bio || ""; 
-
-            if (savedData.profilePicture) {
-                removeButton.style.display = 'block';
-            } else {
-                removeButton.style.display = 'none';
-            }
-        }
-
-        function closePopup() {
-
-            document.body.classList.remove('popup-open');
-            document.body.removeEventListener('touchmove', preventBodyScroll);
-
-            popup.classList.remove('expand');
-            overlay.classList.remove('show');
-            
-            setTimeout(() => {
-                popup.style.display = 'none';
-                overlay.style.display = 'none';
-            }, 0);
-        }
-
-
-        overlay.onclick = function(e) {
-
-            e.preventDefault();
-            return false;
-        };
-
-        function isDescendant(parent, child) {
-            let node = child.parentNode;
-            while (node != null) {
-                if (node === parent) {
-                    return true;
-                }
-                node = node.parentNode;
-            }
-            return false;
-        }
-
-
-        function saveChanges() {
-            if (currentSeat) {
-                const profileData = {
-                    profilePicture: preview.src,
-                    name: nameInput.value,
-                    bio: bioInput.value
-                };
-                
-                localStorage.setItem(currentSeat, JSON.stringify(profileData));
-
-                const nameDisplayContainer = document.getElementById(`name-display-${currentSeat}`);
-                nameDisplayContainer.textContent = profileData.name || "Name";
-
-                closePopup();
-            }
-        }
-
-        imageUpload.addEventListener('change', function(event) {
-            const file = event.target.files[0];
-
-            if (file) {
-                if (file.size > 3 * 1024 * 1024) { 
-                    alert("File size exceeds 3MB.");
-                    imageUpload.value = "";
-                    return; 
-                }
-                
-                const reader = new FileReader();
-                
-                reader.onload = function(e) {
-                    preview.src = e.target.result;
-                    removeButton.style.display = 'block';
-                };
-                
-                reader.readAsDataURL(file);
-            }
-        });
-
-        function removeImage() {
-            imageUpload.value = '';
-            preview.src = "";
-            removeButton.style.display = 'none';
-
-            if (currentSeat) {
-                const profileData = JSON.parse(localStorage.getItem(currentSeat)) || {};
-                profileData.profilePicture = "";
-                localStorage.setItem(currentSeat, JSON.stringify(profileData));
-            }
-        }
-        
-        function handleFormSubmit(event) {
-            event.preventDefault();
-            saveChanges();
-        }
-        
-        document.getElementById('name').addEventListener('keydown', function(event) {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                document.getElementById('bio').focus();
-                
-                setTimeout(() => {
-                    const bioInput = document.getElementById('bio');
-                    if (bioInput.scrollIntoViewIfNeeded) {
-                        bioInput.scrollIntoViewIfNeeded(true);
-                    } else {
-                        bioInput.scrollIntoView({ 
-                            behavior: 'smooth', 
-                            block: 'center' 
-                        });
-                    }
-                }, 100);
-            }
-        });
-
-        document.getElementById('bio').addEventListener('keydown', function(event) {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                saveChanges();
-            }
-        });
-
-        window.addEventListener('resize', updateSeatPositions);
-        classroomImage.addEventListener('load', createSeatLabels);
-        
-        createSeatLabels();
-    </script>
+        reader.readAsDataURL(file);
+      }
+    });
+    
+    function saveChanges(event) {
+      if (event) event.preventDefault();
+      const name = nameInput.value;
+      const bio = bioInput.value;
+      const profilePicture = preview.src;
+      const dataToSave = {
+        name: name,
+        bio: bio,
+        profilePicture: profilePicture
+      };
+      localStorage.setItem(currentSeat, JSON.stringify(dataToSave));
+      const nameDisplayElement = document.getElementById(`name-display-${currentSeat}`);
+      if (nameDisplayElement) {
+        nameDisplayElement.textContent = name || 'Name';
+      }
+      closePopup();
+      return false;
+    }
+    
+    function handleFormSubmit(event) {
+      event.preventDefault();
+      saveChanges(event);
+      return false;
+    }
+    
+    window.onload = () => {
+      createSeatLabels();
+    };
+    
+    window.addEventListener('resize', updateSeatPositions);
+  </script>
 </body>
 </html>
